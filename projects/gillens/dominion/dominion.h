@@ -97,6 +97,9 @@ int playCard(int handPos, int choice1, int choice2, int choice3,
 	     struct gameState *state);
 /* Play card with index handPos from current player's hand */
 
+
+int smithy_run(int currentPlayer, struct gameState *state, int handPos);
+
 int buyCard(int supplyPos, struct gameState *state);
 /* Buy card with supply index supplyPos */
 
