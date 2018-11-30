@@ -1,13 +1,5 @@
 import junit.framework.TestCase;
 
-//You can use this as a skeleton for your 3 different test approach
-//It is an optional to use this file, you can generate your own test file(s) to test the target function!
-// Again, it is up to you to use this file or not!
-
-
-
-
-
 public class UrlValidatorTest extends TestCase {
 
 
@@ -25,27 +17,31 @@ public class UrlValidatorTest extends TestCase {
    }
    
    public void assert_true(String url, UrlValidator urlVal) {
-	   //print nothing if it seems to be working
-	   if (urlVal.isValid(url) == true){ 	   }
+	   //print 'GOOD' if it seems to be working
+	   if (urlVal.isValid(url) == true){
+	   		System.out.println("GOOD");
+	   }
 	   //if not working, print url
 	   else {
-		   System.out.println("Expect true, got: " + urlVal.isValid(url) + " for \t" + url);
+		   System.out.println("ERROR: Expect true, got: " + urlVal.isValid(url) + " for \t" + url);
 	   }
    }
    
    public void assert_false(String url, UrlValidator urlVal) {
-	   //print nothing if it seems to be working
-	   if (urlVal.isValid(url) == false){	   }
+	   //print 'GOOD' if it seems to be working
+	   if (urlVal.isValid(url) == false) {
+	   		System.out.println("GOOD");
+	   }
 	   //if not working, print url
 	   else {
-		   System.out.println("Expect false, got: " + urlVal.isValid(url) + " for \t" + url);
+		   System.out.println("ERROR: Expect false, got: " + urlVal.isValid(url) + " for \t" + url);
 	   }
    } 
    
-   /*
+   
    public void testManualTest()
    {
-	   //You can use this function to implement your manual testing	   
+	   // manual testing	   
 	   long options = 
 	            (UrlValidator.ALLOW_2_SLASHES
 		    + UrlValidator.ALLOW_ALL_SCHEMES
@@ -67,15 +63,10 @@ public class UrlValidatorTest extends TestCase {
 	   assert_false("www.w.google.com", urlVal);
 	   assert_false("www.ww.w.googlecom", urlVal);
 	   
-	   System.out.println();
-	   // errors
-	   //System.out.println("Expect true, got: " + urlVal.isValid("https://www.google.com"));
-	   //System.out.println("Expect true, got: " + urlVal.isValid("ftp://www.google.com"));	   
-	    
+	   System.out.println();	    
    }
-   */
    
-   /*
+   
    public void testYourFirstPartition()
    {
 	 //You can use this function to implement your First Partition testing	 
@@ -122,7 +113,7 @@ public class UrlValidatorTest extends TestCase {
 	   System.out.println();
 	      
    }
-   */
+   
    
    public void testYourSecondPartition(){
 		 //You can use this function to implement your Second Partition testing
@@ -141,16 +132,14 @@ public class UrlValidatorTest extends TestCase {
 	   //assert_false(, urlVal);	   
 	   
 	   System.out.println("Second Partition");
-	   /*
+	   
 	   assert_true("http://www.google.com", urlVal);
 	   assert_true("http://www.google.com/", urlVal);
 	   assert_true("http://www.google.com/images", urlVal);
-	   */
-	   
 	   assert_true("http://www.google.com/images/blah", urlVal);
 	   assert_true("http://www.google.com/images/blah/asdf/asdf/", urlVal);
 	   assert_true("http://www.google.com/images/blah/asdf/asdf/232/", urlVal);
-	   /*
+	   
 	   // path incorrect
 	   assert_false("http://www.google.com/images/blah#(W&&#@($", urlVal);
 	   assert_false("http://www.google.com/!!!#", urlVal);
@@ -160,9 +149,9 @@ public class UrlValidatorTest extends TestCase {
 	   assert_false("http://www.google.com/images/blah/asdf/asdf/``", urlVal);
 	   assert_false("http://www.google.com/images/blah/asdf/asdf/232/()[[", urlVal);
 	   System.out.println();
-	   */	   
+	      
    }   
-   //You need to create more test cases for your Partitions if you need to 
+  
    
    public void testUnit() {
 	   long options = 
@@ -225,12 +214,4 @@ public class UrlValidatorTest extends TestCase {
 	   
 	   
    }
-   
-   public void testIsValid()
-   {
-	   //You can use this function for programming based testing
-
-   }   
-
-
 }
