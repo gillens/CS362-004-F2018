@@ -7,16 +7,14 @@
 #include <string.h>
 
 
-int check_smithy_run(int p, struct gameState *post) {
+int check_adventurer_run(int p, struct gameState *post) {
   // Need to check 2 main things: 
-  //  3 cards added
-  //  current card discarded
   int fail = 0;
 
   struct gameState pre;
   memcpy (&pre, post, sizeof(struct gameState));
 
-  cardEffect(smithy, 0, 0, 0, post, 1, 0);
+  cardEffect(adventurer, 0, 0, 0, post, 1, 0);
   //  printf ("drawCard PRE: p %d HC %d DeC %d DiC %d\n",
   //	  p, pre.handCount[p], pre.deckCount[p], pre.discardCount[p]);
 
@@ -25,14 +23,14 @@ int check_smithy_run(int p, struct gameState *post) {
   
 
   // check for fail
-  if ((*post).deckCount[p] != (pre.deckCount[p] - 3)){
+  //if ((*post).deckCount[p] != (pre.deckCount[p] - 3)){
     printf("deckCount post: %d, deckCount pre: %d\n", (*post).deckCount[p], pre.deckCount[p] );
-    fail = 1;
-  }
-  if ((*post).handCount[p] != (pre.handCount[p] + 2)){
+    //fail = 1;
+  //}
+  //if ((*post).handCount[p] != (pre.handCount[p] + 2)){
     printf("handCount post: %d, handCount pre: %d\n", (*post).handCount[p], pre.handCount[p] );
-    fail = 1;
-  }
+    //fail = 1;
+  //}
 
   return fail;
 }
@@ -47,7 +45,7 @@ int main(){
 
 
 
-  printf ("Testing smithy_run.\n");
+  printf ("Testing adventurer.\n");
 
   printf ("RANDOM TESTS.\n");
 
@@ -71,7 +69,7 @@ int main(){
     G.hand[p][0] = adventurer;
     G.hand[p][1] = smithy;
     
-    error_count += check_smithy_run(p, &G);
+    error_count += check_adventurer_run(p, &G);
   }
 
   if(error_count == 0){
@@ -79,7 +77,7 @@ int main(){
   }
   else {
     printf("ERRORS FOUND\n");
-    printf("smithy_run failed %d times\n", error_count);
+    printf("adventurer_run failed %d times\n", error_count);
   }
 
 }
