@@ -1,157 +1,83 @@
 #include "dominion.h"
-#include "dominion_helpers.h"
+#include <stdlib.h>
 #include "rngs.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
 #include <time.h>
+#include <math.h>
+#include <string.h>
+
+
+int check_adventurer_run(int p, struct gameState *post) {
+  // Need to check 2 main things: 
+  int fail = 0;
+
+  struct gameState pre;
+  memcpy (&pre, post, sizeof(struct gameState));
+
+  cardEffect(adventurer, 0, 0, 0, post, 1, 0);
+  //  printf ("drawCard PRE: p %d HC %d DeC %d DiC %d\n",
+  //	  p, pre.handCount[p], pre.deckCount[p], pre.discardCount[p]);
+
+  //printf ("drawCard POST: p %d HC %d DeC %d DiC %d\n",
+  //      p, post->handCount[p], post->deckCount[p], post->discardCount[p]);
+  
+
+  // check for fail
+  //if ((*post).deckCount[p] != (pre.deckCount[p] - 3)){
+    printf("deckCount post: %d, deckCount pre: %d\n", (*post).deckCount[p], pre.deckCount[p] );
+    //fail = 1;
+  //}
+  //if ((*post).handCount[p] != (pre.handCount[p] + 2)){
+    printf("handCount post: %d, handCount pre: %d\n", (*post).handCount[p], pre.handCount[p] );
+    //fail = 1;
+  //}
+
+  return fail;
+}
 
 int main(){
+  int i, n, r, p, deckCount, discardCount, handCount, num_tests;
+  int players = 2;
+  int kingdomCards[10] = {adventurer, gardens, embargo, village, minion, mine, cutpurse,
+    sea_hag, tribute, smithy};
+  int turns = 30;
+  struct gameState G;
+
+
+
+  printf ("Testing adventurer.\n");
+
+  printf ("RANDOM TESTS.\n");
 
   srand(time(NULL));
-  int testRuns = rand() % 100 + 10; //at least 10 runs 
-  int seed = rand() % 1000 + 100; 
-  int numPlayers = 2; 
-  int player = 1;
-  int k[10] = {adventurer, smithy, great_hall, steward, embargo, outpost, salvager, sea_hag, gardens, mine};
-  int cardNum;
-  int preHandCount = 10; 
-  int postHandCount = 12;
-  int deckCopperCount = 0, deckSilverCount = 0, deckGoldCount = 0;
-  int handCopperCount = 0, handSilverCount = 0, handGoldCount = 0;
-  int postCopperCount = 0, postSilverCount = 0, postGoldCount = 0;
-  int i;  
-  int j;
-  
-  
-  struct gameState G;
-  
-  
 
-  printf("Random Tester: Adventurer\n");
+  int error_count = 0;
   
-  for (i = 0; i < testRuns; i++){
-  printf("---------------------BEGIN NEW RUN------------------------\n");
-    initializeGame(numPlayers, k, seed, &G);
-    G.whoseTurn = player;
-    G.handCount[player] = preHandCount;
+  for (num_tests = 0; num_tests < 10; num_tests++) {
+    // seed for initializeGame
+    int randomSeed = rand();
+    initializeGame(players, kingdomCards, randomSeed, &G);
+
+    p = rand() % 2;
+    G.whoseTurn = p;
+
+    G.deckCount[p] = rand() % MAX_DECK;
+    G.discardCount[p] = rand() % MAX_DECK;
+    G.handCount[p] = rand() % MAX_HAND;
+    G.numActions = 1;
+
+    G.hand[p][0] = adventurer;
+    G.hand[p][1] = smithy;
     
-    G.deckCount[player] = rand() % 400 + 10;
-    
-    printf("Start Hand Amount: %d\n", preHandCount);
-    //build Player 1 deck Keep track of Coins
-    //Any card is fair game here, not just cards in k
-    for(j = 0; j < G.deckCount[player]; j++){
-      cardNum = rand() % treasure_map;
-      G.deck[player][j] = cardNum;
-      
-      if(cardNum == copper){
-        deckCopperCount++;
-      }
-      else if(cardNum == silver){
-        deckSilverCount++;
-      }
-      else if(cardNum == gold){
-        deckGoldCount++;
-      }
-    }
-    //build Player 1 hand, keep track of coins
-    //Any card is fair game here, not just cards in k
-    for(j = 0; j < G.handCount[player]; j++){
-      cardNum = rand() % treasure_map;
-      G.hand[player][j] = cardNum;
-      if(cardNum == copper){
-        handCopperCount++;
-      }
-      else if(cardNum == silver){
-        handSilverCount++;
-      }
-      else if(cardNum == gold){
-        handGoldCount++;
-      }
-    }
-    
-    adventurerCard(&G, player);
-    //Check that two cards were drawn
-    if(G.handCount[player] != postHandCount){
-      if(G.handCount[player] > postHandCount){
-        printf("Too many cards were added to hand!\n");
-        printf("Hand Count after Card effect: %d\n", G.handCount[player]);
-      }
-      else if(G.handCount[player] < postHandCount){
-        printf("Too few cards were added to hand!\n");
-        printf("Hand Count after Card effect: %d\n", G.handCount[player]);
-      }
-    }
-    //Loop to find new treasure card counts
-    for(j = 0; j < G.handCount[player]; j++){
-      if(G.hand[player][j] == copper){
-        postCopperCount++;
-      }
-      else if(G.hand[player][j] == silver){
-        postSilverCount++;
-      }
-      else if(G.hand[player][j] == gold){
-        postGoldCount++;
-      }
-      
-    }
-    //Checks status of treasure cards in hand
-    //copper
-//    if(handCopperCount != postCopperCount){
-//      if(handCopperCount < postCopperCount){
-//        printf("Copper was added to hand\n");
-//        printf("Pre copper amount: %d\n", handCopperCount);
-//        printf("Post copper amount: %d\n", postCopperCount);
-//      }
-//      else if(handCopperCount > postCopperCount){
-//        printf("Copper was lost in hand???\n");
-//        printf("Pre copper amount: %d\n", handCopperCount);
-//        printf("Post copper amount: %d\n", postCopperCount);
-//      }
-//    }
-//    //silver
-//    if(handSilverCount != postSilverCount){
-//      if(handSilverCount < postSilverCount){
-//        printf("Silver was added to hand\n");
-//        printf("Pre Silver amount: %d\n", handSilverCount);
-//        printf("Post Silver amount: %d\n", postSilverCount);
-//      }
-//      else if(handSilverCount > postSilverCount){
-//        printf("Silver was lost in hand???\n");
-//        printf("Pre Silver amount:  %d\n", handSilverCount);
-//        printf("Post Silver amount: %d\n", postSilverCount);
-//      }
-//    }
-//    //Gold
-//    if(handGoldCount != postGoldCount){
-//      if(handGoldCount < postGoldCount){
-//        printf("Gold was added to hand\n");
-//        printf("Pre Gold amount: %d\n", handGoldCount);
-//        printf("Post Gold amount: %d\n", postGoldCount);
-//      }
-//      else if(handGoldCount > postGoldCount){
-//        printf("Gold was lost in hand\n");
-//        printf("Pre Gold amount: %d\n", handGoldCount);
-//        printf("Post Gold amount: %d\n", postGoldCount);
-//      }
-//    }
-    
-    printf("Initial Values of Treasure found in Hand\n");
-    printf("Copper: %d\n", handSilverCount);
-    printf("Silver: %d\n", handSilverCount);
-    printf("Gold: %d\n", handGoldCount);
-    printf("Post Values of Treasure found in Hand\n");
-    printf("Copper: %d\n", postCopperCount);
-    printf("Silver: %d\n", postSilverCount);
-    printf("Gold: %d\n", postGoldCount); 
-    
-    
-    printf("Run Number: %d\n" ,i);
-    printf("\n");
-    printf("\n");
+    error_count += check_adventurer_run(p, &G);
   }
-  
-  return 0; 
-}   
-   
+
+  if(error_count == 0){
+    printf ("ALL TESTS OK\n");
+  }
+  else {
+    printf("ERRORS FOUND\n");
+    printf("adventurer_run failed %d times\n", error_count);
+  }
+
+}

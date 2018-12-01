@@ -1,84 +1,89 @@
 #include "dominion.h"
-#include "dominion_helpers.h"
+#include <stdlib.h>
 #include "rngs.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
 #include <time.h>
+#include <math.h>
+#include <string.h>
+
+
+int check_village_run(int p, struct gameState *post) {
+  // Need to check 2 main things: 
+  //  1 card added
+  //  2 actions added
+  //  current card discarded
+  int fail = 0;
+
+  struct gameState pre;
+  memcpy (&pre, post, sizeof(struct gameState));
+
+  cardEffect(village, 0, 0, 0, post, 1, 0);
+  //  printf ("drawCard PRE: p %d HC %d DeC %d DiC %d\n",
+  //	  p, pre.handCount[p], pre.deckCount[p], pre.discardCount[p]);
+
+  //printf ("drawCard POST: p %d HC %d DeC %d DiC %d\n",
+  //      p, post->handCount[p], post->deckCount[p], post->discardCount[p]);
+  
+
+  // check for fail
+  //if ((*post).deckCount[p] != (pre.deckCount[p] - 1)){
+    printf("deckCount post: %d, deckCount pre: %d\n", (*post).deckCount[p], pre.deckCount[p] );
+   // fail = 1;
+  //}
+  //if ((*post).handCount[p] != (pre.handCount[p] )){
+    printf("handCount post: %d, handCount pre: %d\n", (*post).handCount[p], pre.handCount[p] );
+  //  fail = 1;
+  //}
+  //if ((*post).numActions != (pre.numActions )){
+    printf("numAction: %d, numActions pre: %d\n", (*post).numActions, pre.numActions );
+   // fail = 1;
+  //}
+  return fail;
+}
 
 int main(){
-  
-  int testRuns = rand() % 100 + 10; //at least 10 runs 
-  int seed = rand() % 1000 + 100; 
-  int numPlayers = 2; 
-  int player = 1;
-  int k[10] = {adventurer, smithy, great_hall, steward, embargo, outpost, salvager, sea_hag, gardens, mine};
-  int cardNum;
-  int handCount = 10; 
-  int postHandCount;//should be plus 1 original hand count
-  int preHandCount;//just in case seperate variable
-  int i;  
-  int j;
-  
-  
+  int p, deckCount, discardCount, handCount, num_tests;
+  int players = 2;
+  int kingdomCards[10] = {adventurer, gardens, embargo, village, minion, mine, cutpurse,
+    sea_hag, tribute, smithy};
+  int turns = 30;
   struct gameState G;
-  
+
+
+
+  printf ("Testing village.\n");
+
+  printf ("RANDOM TESTS.\n");
+
   srand(time(NULL));
 
-  printf("Random Tester: Great Hall\n");
+  int error_count = 0;
   
-  for (i = 0; i < testRuns; i++){
-  
-    initializeGame(numPlayers, k, seed, &G);
-    G.whoseTurn = player;
-    G.handCount[player] = handCount;
+  for (num_tests = 0; num_tests < 10; num_tests++) {
+    // seed for initializeGame
+    int randomSeed = rand();
+    initializeGame(players, kingdomCards, randomSeed, &G);
+
+    p = rand() % 2;
+    G.whoseTurn = p;
+
+    G.deckCount[p] = rand() % MAX_DECK;
+    G.discardCount[p] = rand() % MAX_DECK;
+    G.handCount[p] = rand() % MAX_HAND;
     G.numActions = 1;
-    G.deckCount[player] = rand() % 400 + 10;
-    //build Player 1 
-    //Any card is fair game here, not just cards in k
-    for(j = 0; j < G.deckCount[player]; j++){
-      cardNum = rand() % treasure_map;
-      G.deck[player][j] = cardNum; 
-    }
-    //build Player 1 hand
-    //Any card is fair game here, not just cards in k
-    G.hand[player][0] = great_hall;
-    for(j = 1; j < G.handCount[player]; j++){
-      cardNum = rand() % treasure_map;
-      G.hand[player][j] = cardNum;
-    }
+
+    G.hand[p][0] = adventurer;
+    G.hand[p][1] = village;
     
-    preHandCount = G.handCount[player];
-    printf("Hand Size Pre GreatHall: %d\n", preHandCount);
-    printf("# of Actions Pre GreatHall: %d\n", G.numActions);
-    printf("Pre GreatHall cards: ");
-    for(j = 0; j < G.handCount[player]; j++){//13 is smithy
-      
-      printf("%d ", G.hand[player][j]);
-    }
-    printf("\n");
-    
-    playCard(0,0,0,0,&G); 
-    
-    postHandCount = G.handCount[player];
-    if(postHandCount != preHandCount){
-      printf("Problem with hand Size\n");
-      printf("Hand Size Post Great Hall: %d\n", postHandCount);
-    }
-    else{
-      printf("Hand Size is Appropriate");
-    }
-    printf("# Actions Post Great Hall: %d\n", G.numActions);
-    printf("Post Great Hall cards in hand: ");
-    for(j = 0; j < G.handCount[player]; j++){//13 is smithy
-      
-      printf("%d ", G.hand[player][j]);
-    }
-    printf("\n");
-    
-    printf("Run Number: %d\n" ,i);
-    printf("\n");
-    printf("\n");
+    error_count += check_village_run(p, &G);
   }
-  return 0;
+
+  if(error_count == 0){
+    printf ("ALL TESTS OK\n");
+  }
+  else {
+    printf("ERRORS FOUND\n");
+    printf("village failed %d times\n", error_count);
+  }
+
 }
